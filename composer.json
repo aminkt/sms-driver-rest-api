@@ -1,0 +1,21 @@
+{
+    "name": "aminkt/sms-driver-rest-api",
+    "description": "Rest Api Sms driver created to work with more than one sms service provider with same interface.",
+    "type": "library",
+    "keywords": ["yii2","extension","sms","sms driver"],
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Amin Keshavarz",
+            "email": "Ak_1596@yahoo.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "aminkt\\sms\\": "rest/"
+        }
+    }
+}
