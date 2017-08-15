@@ -9,6 +9,7 @@
 namespace aminkt\sms\drivers;
 
 
+use aminkt\sms\exceptions\InvalidInputException;
 use aminkt\sms\Response;
 use aminkt\sms\Sms;
 
@@ -16,10 +17,15 @@ abstract class AbstractDriver
 {
     /** @var  string $serverAddress Server address. */
     public static $serverAddress;
+
     /** @var Sms $sms Holds Sms object instance */
     protected $sms;
+
     /** @var Response $response Holds Sms API Response */
     protected $response;
+
+    /** @var double $timeout Curl request time out. */
+    protected $timeout;
 
     /**
      * Driver constructor.
@@ -75,11 +81,11 @@ abstract class AbstractDriver
      *
      * @param string $method
      * @param array $params
-     * @param string $method
+     * @param string $requestMethod
      *
      * @return Response
      */
-    abstract public function sendRequest($method, $params, $method = 'post');
+    abstract public function sendRequest($method, $params, $requestMethod = 'post');
 
     /**
      * Send sms message.
@@ -88,7 +94,7 @@ abstract class AbstractDriver
      * <code>
      * $args = [
      *      'message'=>'SMS text',
-     *      'recipientNumber'=>[
+     *      'recipientNumbers'=>[
      *          09120813856,
      *          09398745687,
      *          ...
@@ -113,4 +119,26 @@ abstract class AbstractDriver
      * @return integer
      */
     abstract public function getCreditNumber();
+
+    /**
+     * Load input from array.
+     *
+     * @param string $key
+     * @param array $array
+     * @param bool $required
+     *
+     * @return null|mixed
+     *
+     * @throws InvalidInputException
+     */
+    protected function loadFromInputArray($key, $array, $required = false)
+    {
+        if (isset($array[$key]))
+            return $array[$key];
+
+        if ($required)
+            throw new InvalidInputException("Input is not exist.");
+
+        return null;
+    }
 }

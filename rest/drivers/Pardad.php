@@ -11,7 +11,7 @@ namespace aminkt\sms\drivers;
 /**
  * Class Pardad
  * Handle pardad rest api.
- * @see http://pardaadsms.ir/?Page=WebServiceHelp
+ * @see http://pardaadsms.ir/?Page=WebServiceHelp Pardad documents for method inputs [http://pardaadsms.ir/?Page=WebServiceHelp]
  *
  * @method mixed SendArray(array $params = [])
  * @method mixed GetMessageID(array $params = [])
@@ -30,13 +30,31 @@ namespace aminkt\sms\drivers;
  */
 class Pardad extends AbstractDriver
 {
+    /** @inheritdoc */
+    public static $serverAddress = 'http://pardaadsms.ir/SMSWS/HttpService.ashx';
 
     /**
      * @inheritdoc
      */
     public function sendSms($args = [])
     {
-        // TODO: Implement sendSms() method.
+        $number = "";
+        $chkMessageID = "";
+        foreach ($this->loadFromInputArray('recipientNumbers', $args, true) as $item) {
+            $number = $number . $item . ",";
+        }
+        foreach ($this->loadFromInputArray('CheckingMessageID', $args) as $item) {
+            $chkMessageID = $chkMessageID . $item . ",";
+        }
+        $isFlash = $this->loadFromInputArray('isFlash', $args);
+        $args = [
+            'To' => $number,
+            'Message' => $this->loadFromInputArray('message', $args, true),
+            'From' => $this->loadFromInputArray('From', $args),
+            'Flash' => $isFlash ? "true" : "false",
+            'chkMessageId' => $chkMessageID,
+        ];
+        return $this->SendArray($args);
     }
 
     /**
@@ -53,5 +71,36 @@ class Pardad extends AbstractDriver
     public function getCreditPrice($args = [])
     {
         return $this->GetCredit();
+    }
+
+    private function getLoginData()
+    {
+        return [
+            'UserName' => 'farshad',
+            'Password' => 'byBnMbki3zxU'
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function sendRequest($method, $params, $requestMethod = 'post')
+    {
+        $params = array_merge($this->getLoginData(), $params);
+        $data = '';
+        $i = 0;
+        foreach ($params as $key => $val) {
+            if ($i > 0)
+                $data .= '&';
+            $data .= trim($key) . '=' . urlencode(trim($val));
+            $i++;
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, static::$serverAddress . '?' . $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
     }
 }
