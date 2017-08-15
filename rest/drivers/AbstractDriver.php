@@ -54,6 +54,22 @@ abstract class AbstractDriver
     }
 
     /**
+     * Magic method to process any dynamic method calls.
+     *
+     * @param $method
+     * @param $arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        if (method_exists($this, $method)) {
+            return call_user_func_array([$this, $method], $arguments);
+        }
+        return $this->create($method, $arguments);
+    }
+
+    /**
      * Call driver method.
      *
      * @param string $method Method name.
@@ -64,9 +80,8 @@ abstract class AbstractDriver
     public function create($method, $params = [])
     {
         if (method_exists($this, $method)) {
-            return call_user_func_array([$this, $method], $params);
+            return call_user_func_array([$this, $method], [$params]);
         }
-
         $reqMethod = 'post';
         if (preg_match('/get/is', $method)) {
             $reqMethod = 'get';
@@ -141,4 +156,22 @@ abstract class AbstractDriver
 
         return null;
     }
+
+    /**
+     * Set panel login data.
+     * @param array $args   Input login data. For example:
+     * <code>
+     * $args = [
+     *  'username'=>yourUserName,
+     *  'password'=>password
+     * ]
+     * </code>
+     */
+    abstract public function setLoginData($args = []);
+
+    /**
+     * Get panel login data.
+     * @return array
+     */
+    abstract protected function getLoginData();
 }

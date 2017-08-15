@@ -17,6 +17,11 @@ use aminkt\sms\exceptions\InvalidDriverException;
  *
  * Send sms by defined driver.
  *
+ * @method  Response sendSms(array $args = [])                          Send sms message.
+ * @method  Response getCreditPrice()                                   Get panel credit
+ * @method  Response getCreditNumber()                                  Get panel credit
+ * @method  void     setLoginData(array $args = [])   Set panel login data.
+ *
  * @package aminkt\sms
  */
 class Sms
@@ -34,10 +39,13 @@ class Sms
      */
     public function setDriver($driver)
     {
-        if (class_exists($driver))
-            $this->driver = new $driver();
-        if (!($driver instanceof MethodsFactory))
-            throw new InvalidDriverException();
+        if (class_exists($driver)){
+            $this->driver = new $driver($this);
+            if (!($this->driver instanceof MethodsFactory))
+                throw new InvalidDriverException("$driver is not an instance of ".MethodsFactory::class);
+        }else{
+            throw new InvalidDriverException("$driver Not found.");
+        }
     }
 
     /**

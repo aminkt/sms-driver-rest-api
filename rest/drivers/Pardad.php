@@ -33,6 +33,10 @@ class Pardad extends AbstractDriver
     /** @inheritdoc */
     public static $serverAddress = 'http://pardaadsms.ir/SMSWS/HttpService.ashx';
 
+    private $username;
+    private $password;
+    private $WSID;
+
     /**
      * @inheritdoc
      */
@@ -73,11 +77,25 @@ class Pardad extends AbstractDriver
         return $this->GetCredit();
     }
 
-    private function getLoginData()
+    /**
+     * @inheritdoc
+     */
+    public function setLoginData($args = []){
+        $this->username = $this->loadFromInputArray('username', $args, true);
+        $this->password = $this->loadFromInputArray('password', $args, true);
+        $this->WSID = $this->loadFromInputArray('WSID', $args, true);
+    }
+
+    /**
+     * Get panel login data.
+     * @return array
+     */
+    protected function getLoginData()
     {
         return [
-            'UserName' => 'farshad',
-            'Password' => 'byBnMbki3zxU'
+            'UserName' => $this->username,
+            'Password' => $this->password,
+            'WSID' => $this->WSID
         ];
     }
 
@@ -95,10 +113,12 @@ class Pardad extends AbstractDriver
             $data .= trim($key) . '=' . urlencode(trim($val));
             $i++;
         }
+        $url = static::$serverAddress . '?' . $data;
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, static::$serverAddress . '?' . $data);
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+        if($this->timeout)
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
