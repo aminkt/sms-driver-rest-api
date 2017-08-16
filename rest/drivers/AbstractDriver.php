@@ -10,7 +10,6 @@ namespace aminkt\sms\drivers;
 
 
 use aminkt\sms\exceptions\InvalidInputException;
-use aminkt\sms\Response;
 use aminkt\sms\Sms;
 
 abstract class AbstractDriver
@@ -21,7 +20,7 @@ abstract class AbstractDriver
     /** @var Sms $sms Holds Sms object instance */
     protected $sms;
 
-    /** @var Response $response Holds Sms API Response */
+    /** @var \GuzzleHttp\Psr7\Response $response Holds Sms API Response */
     protected $response;
 
     /** @var double $timeout Curl request time out. */
@@ -66,6 +65,8 @@ abstract class AbstractDriver
         if (method_exists($this, $method)) {
             return call_user_func_array([$this, $method], $arguments);
         }
+        if (isset($arguments[0]))
+            $arguments = $arguments[0];
         return $this->create($method, $arguments);
     }
 
@@ -75,12 +76,13 @@ abstract class AbstractDriver
      * @param string $method Method name.
      * @param array $params Method args
      *
-     * @return Response|mixed
+     * @return \GuzzleHttp\Psr7\Response|mixed
      */
     public function create($method, $params = [])
     {
         if (method_exists($this, $method)) {
-            return call_user_func_array([$this, $method], [$params]);
+            $arr = array($params);
+            return call_user_func_array([$this, $method], $arr);
         }
         $reqMethod = 'post';
         if (preg_match('/get/is', $method)) {
@@ -98,7 +100,7 @@ abstract class AbstractDriver
      * @param array $params
      * @param string $requestMethod
      *
-     * @return Response
+     * @return \GuzzleHttp\Psr7\Response
      */
     abstract public function sendRequest($method, $params, $requestMethod = 'post');
 
@@ -152,7 +154,7 @@ abstract class AbstractDriver
             return $array[$key];
 
         if ($required)
-            throw new InvalidInputException("Input is not exist.");
+            throw new InvalidInputException("$key is not exist as inout.");
 
         return null;
     }

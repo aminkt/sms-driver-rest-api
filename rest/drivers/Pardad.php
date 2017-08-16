@@ -5,7 +5,6 @@
  * Date: 8/15/2017
  * Time: 12:23 AM
  */
-
 namespace aminkt\sms\drivers;
 
 /**
@@ -36,6 +35,7 @@ class Pardad extends AbstractDriver
     private $username;
     private $password;
     private $WSID;
+    public $from = '50002070001555';
 
     /**
      * @inheritdoc
@@ -44,17 +44,20 @@ class Pardad extends AbstractDriver
     {
         $number = "";
         $chkMessageID = "";
-        foreach ($this->loadFromInputArray('recipientNumbers', $args, true) as $item) {
+        $numbers = $this->loadFromInputArray('recipientNumbers', $args, true);
+        $chkMessageIDs = $this->loadFromInputArray('CheckingMessageID', $args);
+        foreach ($numbers ? $numbers : [] as $item) {
             $number = $number . $item . ",";
         }
-        foreach ($this->loadFromInputArray('CheckingMessageID', $args) as $item) {
+        foreach ($chkMessageIDs ? $chkMessageIDs : [] as $item) {
             $chkMessageID = $chkMessageID . $item . ",";
         }
         $isFlash = $this->loadFromInputArray('isFlash', $args);
+        $from = $this->loadFromInputArray('From', $args);
         $args = [
             'To' => $number,
             'Message' => $this->loadFromInputArray('message', $args, true),
-            'From' => $this->loadFromInputArray('From', $args),
+            'From' => $from ? $from : $this->from,
             'Flash' => $isFlash ? "true" : "false",
             'chkMessageId' => $chkMessageID,
         ];
@@ -83,7 +86,7 @@ class Pardad extends AbstractDriver
     public function setLoginData($args = []){
         $this->username = $this->loadFromInputArray('username', $args, true);
         $this->password = $this->loadFromInputArray('password', $args, true);
-        $this->WSID = $this->loadFromInputArray('WSID', $args, true);
+//        $this->WSID = $this->loadFromInputArray('WSID', $args, true);
     }
 
     /**
@@ -95,7 +98,7 @@ class Pardad extends AbstractDriver
         return [
             'UserName' => $this->username,
             'Password' => $this->password,
-            'WSID' => $this->WSID
+//            'WSID' => $this->WSID
         ];
     }
 
@@ -104,23 +107,21 @@ class Pardad extends AbstractDriver
      */
     public function sendRequest($method, $params, $requestMethod = 'post')
     {
+
         $params = array_merge($this->getLoginData(), $params);
-        $data = '';
-        $i = 0;
-        foreach ($params as $key => $val) {
-            if ($i > 0)
-                $data .= '&';
-            $data .= trim($key) . '=' . urlencode(trim($val));
-            $i++;
+        $params = array_merge(['service' => $method], $params);
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request($requestMethod, static::$serverAddress, [
+                'query' => $params
+            ]);
+            if ($response->getStatusCode() == 200) {
+                $this->response = $response;
+                return $response;
+            }
+        } catch (\Exception $exception) {
+            throw $exception;
         }
-        $url = static::$serverAddress . '?' . $data;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if($this->timeout)
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
+        return false;
     }
 }
