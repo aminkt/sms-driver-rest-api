@@ -44,7 +44,7 @@ class Pardad extends AbstractDriver
     {
         $number = "";
         $chkMessageID = "";
-        $numbers = $this->loadFromInputArray('recipientNumbers', $args, true);
+        $numbers = $this->loadFromInputArray('numbers', $args, true);
         $chkMessageIDs = $this->loadFromInputArray('CheckingMessageID', $args);
         foreach ($numbers ? $numbers : [] as $item) {
             $number = $number . $item . ",";
@@ -61,7 +61,10 @@ class Pardad extends AbstractDriver
             'Flash' => $isFlash ? "true" : "false",
             'chkMessageId' => $chkMessageID,
         ];
-        return $this->SendArray($args);
+        $respnse = $this->SendArray($args);
+        if($respnse)
+            return $respnse;
+        return false;
     }
 
     /**
@@ -77,7 +80,7 @@ class Pardad extends AbstractDriver
      */
     public function getCreditPrice($args = [])
     {
-        return $this->GetCredit();
+        return doubleval($this->GetCredit());
     }
 
     /**
@@ -107,17 +110,16 @@ class Pardad extends AbstractDriver
      */
     public function sendRequest($method, $params, $requestMethod = 'post')
     {
-
         $params = array_merge($this->getLoginData(), $params);
         $params = array_merge(['service' => $method], $params);
         try {
             $client = new \GuzzleHttp\Client();
-            $response = $client->request($requestMethod, static::$serverAddress, [
+            $response = $client->request(strtoupper($requestMethod), static::$serverAddress, [
                 'query' => $params
             ]);
             if ($response->getStatusCode() == 200) {
                 $this->response = $response;
-                return $response;
+                return $response->getBody()->getContents();
             }
         } catch (\Exception $exception) {
             throw $exception;

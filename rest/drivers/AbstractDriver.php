@@ -12,6 +12,12 @@ namespace aminkt\sms\drivers;
 use aminkt\sms\exceptions\InvalidInputException;
 use aminkt\sms\Sms;
 
+/**
+ * Class AbstractDriver
+ * Implment base of drivers.
+ *
+ * @package aminkt\sms\drivers
+ */
 abstract class AbstractDriver
 {
     /** @var  string $serverAddress Server address. */
@@ -20,7 +26,7 @@ abstract class AbstractDriver
     /** @var Sms $sms Holds Sms object instance */
     protected $sms;
 
-    /** @var \GuzzleHttp\Psr7\Response $response Holds Sms API Response */
+    /** @var \Psr\Http\Message\ResponseInterface $response Holds Sms API Response */
     protected $response;
 
     /** @var double $timeout Curl request time out. */
@@ -76,7 +82,7 @@ abstract class AbstractDriver
      * @param string $method Method name.
      * @param array $params Method args
      *
-     * @return \GuzzleHttp\Psr7\Response|mixed
+     * @return mixed|\Psr\Http\Message\ResponseInterface
      */
     public function create($method, $params = [])
     {
@@ -100,7 +106,7 @@ abstract class AbstractDriver
      * @param array $params
      * @param string $requestMethod
      *
-     * @return \GuzzleHttp\Psr7\Response
+     * @return mixed
      */
     abstract public function sendRequest($method, $params, $requestMethod = 'post');
 
@@ -111,7 +117,7 @@ abstract class AbstractDriver
      * <code>
      * $args = [
      *      'message'=>'SMS text',
-     *      'recipientNumbers'=>[
+     *      'numners'=>[
      *          09120813856,
      *          09398745687,
      *          ...

@@ -17,10 +17,10 @@ use aminkt\sms\exceptions\InvalidDriverException;
  *
  * Send sms by defined driver.
  *
- * @method  \GuzzleHttp\Psr7\Response sendSms(array $args = [])                          Send sms message.
- * @method  \GuzzleHttp\Psr7\Response getCreditPrice()                                   Get panel credit
- * @method  \GuzzleHttp\Psr7\Response getCreditNumber()                                  Get panel credit
- * @method  void     setLoginData(array $args = [])   Set panel login data.
+ * @method  mixed   sendSms(array $args = [])                          Send sms message.
+ * @method  double  getCreditPrice()                                   Get panel credit
+ * @method  integer getCreditNumber()                                  Get panel credit
+ * @method  void    setLoginData(array $args = [])   Set panel login data.
  *
  * @package aminkt\sms
  */
