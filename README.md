@@ -1,3 +1,4 @@
+
 Rest Api Sms driver
 ===================
 Rest Api Sms driver created to work with more than one sms service provider with same interface.
@@ -31,16 +32,13 @@ Once the extension is installed, simply use it in your code by  :
 $sms = new \aminkt\sms\Sms();
 // Ingnore below line if you don't want change default driver.
 $sms->setDrviver('\your\driver\Class');
-$sms->setLoginData([
-    'username'=>'youUserNmae',
-    'password'=>'yourPassword',
-]);
+$sms->setLoginData([`LOGIN_DATA`]);
 $sms->sendSms([
     'message'=>'Your test message.',
     'numbers'=>['09120813856', '+989121234567']
 ]);
 ```
-
+> `LOGIN_DATA` depends on what driver is used to send sms, there is a list of supported drivers is blew
 User your own driver
 -----
 If you want you can simply write your own driver and attach it to this library.
@@ -61,8 +59,22 @@ List of driver that published and avilable right now.
 
 | Driver name   | namespace                  | createdBy                                    | publish date |
 | ------------- |:--------------------------:| :-------------------------------------------:| :-----------:|
-| Pardad        | \aminkt\sms\drivers\Pardad | [Amin Keshavarz](https://gitlab.com/aminkt/) | 17 / 8 /2017 |
+| Pardad        | \aminkt\sms\drivers\Pardad | [Amin Keshavarz](https://gitlab.com/aminkt/) | 17 / 8 /2017 
+| KaveNegar     | \aminkt\sms\drivers\KaveNegar | [mr-exception](https://gitlab.com/mr-exception/) | 5 / 2 /2018 
+|
 
+Login Data for Pardad
+------
+| parameters | type | description|
+| ------------- | ------ | -------|
+| username | string | username for auth |
+| password | string | password for auth |
+
+Login Data for KaveNegar
+------
+| parameters | type | description|
+| ------------- | ------ | -------|
+| token | string | token given in cpanel |
 
 > Be aware use of this library and its driver is alowed for all but you should keep recources and authors names.
 
@@ -72,5 +84,6 @@ If you create your own driver we become so happy if you pulblish it in our libra
 
 
 [Amin Keshavarz](https://gitlab.com/aminkt/)
+[Mr-Exception](https://gitlab.com/mr-exception/)
 
 [Mail to Aminn Keshavarz](mailto: ak_1596@yahoo.com)

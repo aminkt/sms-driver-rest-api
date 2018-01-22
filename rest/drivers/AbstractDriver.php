@@ -117,7 +117,7 @@ abstract class AbstractDriver
      * <code>
      * $args = [
      *      'message'=>'SMS text',
-     *      'numners'=>[
+     *      'numbers'=>[
      *          09120813856,
      *          09398745687,
      *          ...
