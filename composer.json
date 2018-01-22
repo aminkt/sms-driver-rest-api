@@ -3,7 +3,7 @@
     "description": "Rest Api Sms driver created to work with more than one sms service provider with same interface.",
     "type": "library",
     "keywords": ["yii2","extension","sms","sms driver"],
-    "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Amin Keshavarz",
