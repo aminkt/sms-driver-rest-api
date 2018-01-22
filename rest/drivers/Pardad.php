@@ -89,7 +89,8 @@ class Pardad extends AbstractDriver
     public function setLoginData($args = []){
         $this->username = $this->loadFromInputArray('username', $args, true);
         $this->password = $this->loadFromInputArray('password', $args, true);
-//        $this->WSID = $this->loadFromInputArray('WSID', $args, true);
+        $this->WSID = $this->loadFromInputArray('WSID', $args);
+        $this->from = $this->loadFromInputArray('fromNumber', $args, false, '50002070001555');
     }
 
     /**
@@ -101,7 +102,7 @@ class Pardad extends AbstractDriver
         return [
             'UserName' => $this->username,
             'Password' => $this->password,
-//            'WSID' => $this->WSID
+            'WSID' => $this->WSID
         ];
     }
 

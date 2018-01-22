@@ -147,14 +147,15 @@ abstract class AbstractDriver
      * Load input from array.
      *
      * @param string $key
-     * @param array $array
-     * @param bool $required
+     * @param array  $array
+     * @param bool   $required
      *
-     * @return null|mixed
+     * @param mixed  $default Default value.
      *
-     * @throws InvalidInputException
+     * @return mixed|null
+     * @throws \aminkt\sms\exceptions\InvalidInputException
      */
-    protected function loadFromInputArray($key, $array, $required = false)
+    protected function loadFromInputArray($key, $array, $required = false, $default = null)
     {
         if (isset($array[$key]))
             return $array[$key];
@@ -162,7 +163,7 @@ abstract class AbstractDriver
         if ($required)
             throw new InvalidInputException("$key is not exist as inout.");
 
-        return null;
+        return $default;
     }
 
     /**
