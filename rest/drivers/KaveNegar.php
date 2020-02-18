@@ -7,6 +7,9 @@
  */
 namespace aminkt\sms\drivers;
 
+use Exception;
+use GuzzleHttp\Client;
+
 /**
  * Class KaveNegar
  * Handle KaveNegar rest api.
@@ -36,17 +39,32 @@ class KaveNegar extends AbstractDriver
     public $from;
 
     /**
-     * @inheritdoc
+     * Send sms message.
+     *
+     * @param mixed $args Send sms by prepared args.
+     * <code>
+     * $args = [
+     *      'message'=>'SMS text',
+     *      'numbers'=>[
+     *          '09120813856',
+     *          '09398745687',
+     *          ...
+     *      ],
+     *      'from'=>'23920453' //Sender number. Optional
+     * ]
+     * </code>
+     * @return boolean
      */
     public function sendSms($args = []){
       $numbers = $this->loadFromInputArray('numbers', $args, true);
       $number = implode(',', $numbers);
-      $from = $this->loadFromInputArray('From', $args);
+      $from = $this->loadFromInputArray('from', $args);
+      $message = ($this->loadFromInputArray('message', $args, true));
       $args = [
-          'To' => $number,
-          'Message' => $this->loadFromInputArray('message', $args, true),
-          'From' => $from ? $from : $this->from
+          'receptor' => urlencode($number),
+          'message' => urlencode($message),
       ];
+      $from && $args['sender'] = $from;
       $respnse = $this->send($args);
       if($respnse)
           return $respnse;
@@ -90,15 +108,16 @@ class KaveNegar extends AbstractDriver
      */
     public function sendRequest($method, $params, $requestMethod = 'post') {
       $address = str_replace('<REQ>', $method, KaveNegar::$serverAddress);
-      $address .= '?receptor=' . urlencode($params['To']) . '&message=' . urlencode($params['Message']);
       try {
-          $client = new \GuzzleHttp\Client();
-          $res = $client->request('GET', $address, []);
+          $client = new Client();
+          $res = $client->request(strtoupper($requestMethod), $address, [
+              'query' => $params
+          ]);
           if ($res->getStatusCode() == 200) {
             // $this->$response = $res;
             return $res->getBody()->getContents();
           }
-      } catch (\Exception $exception) {
+      } catch (Exception $exception) {
           throw $exception;
       }
       return false;
