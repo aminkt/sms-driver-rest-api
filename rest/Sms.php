@@ -9,7 +9,7 @@
 namespace aminkt\sms;
 
 use aminkt\sms\drivers\AbstractDriver as MethodsFactory;
-use aminkt\sms\drivers\Pardad;
+use aminkt\sms\drivers\Sharifs;
 use aminkt\sms\exceptions\InvalidDriverException;
 
 /**
@@ -99,7 +99,7 @@ class Sms
     protected function methodsFactory()
     {
         if ($this->driver === null) {
-            $this->setDriver(Pardad::class);
+            $this->setDriver(Sharifs::class);
         }
 
         return $this->getDriver();
