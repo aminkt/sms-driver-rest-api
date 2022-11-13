@@ -10,7 +10,7 @@ namespace aminkt\sms\drivers;
 /**
  * Class Pardad
  * Handle pardad rest api.
- * @see http://pardaadsms.ir/?Page=WebServiceHelp Pardad documents for method inputs [http://pardaadsms.ir/?Page=WebServiceHelp]
+ * @see http://sms.sharifs.ir/?Page=WebServiceHelp Sharifs documents for method inputs [http://sms.sharifs.ir/?Page=WebServiceHelp]
  *
  * @method mixed SendArray(array $params = [])
  * @method mixed GetMessageID(array $params = [])
@@ -30,7 +30,7 @@ namespace aminkt\sms\drivers;
 class Pardad extends AbstractDriver
 {
     /** @inheritdoc */
-    public static $serverAddress = 'http://pardaadsms.ir/SMSWS/HttpService.ashx';
+    public static $serverAddress = 'http://sms.sharifs.ir/SMSWS/HttpService.ashx';
 
     private $username;
     private $password;
